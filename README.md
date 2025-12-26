@@ -1,0 +1,1 @@
+To start DB enter sudo -u postgres ./init_db.sh.
