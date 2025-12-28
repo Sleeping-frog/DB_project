@@ -1,19 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 DB_NAME="zoo_db"
+DB_USER="postgres"
+DB_PASSWORD="1234"
+DB_HOST="localhost"
 
-echo "Creating database ${DB_NAME} (if not exists)..."
+export PGPASSWORD="$DB_PASSWORD"
 
-psql -U postgres -d postgres <<EOF
-SELECT 'CREATE DATABASE ${DB_NAME}'
-WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DB_NAME}')
-\gexec
-EOF
+echo "Dropping database $DB_NAME (if exists)..."
+psql -h "$DB_HOST" -U "$DB_USER" -d postgres -c "DROP DATABASE IF EXISTS $DB_NAME;"
+
+echo "Creating database $DB_NAME..."
+psql -h "$DB_HOST" -U "$DB_USER" -d postgres -c "CREATE DATABASE $DB_NAME;"
 
 echo "Creating tables..."
-
-psql -U postgres -d ${DB_NAME} <<'EOF'
+psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" <<'EOF'
 
 CREATE TABLE IF NOT EXISTS species (
     id SERIAL PRIMARY KEY,
@@ -33,12 +35,9 @@ CREATE TABLE IF NOT EXISTS enclosure (
 
 CREATE TABLE IF NOT EXISTS placement (
     id SERIAL PRIMARY KEY,
-
     species_id INTEGER NOT NULL REFERENCES species(id) ON DELETE CASCADE,
     enclosure_id INTEGER NOT NULL REFERENCES enclosure(id) ON DELETE CASCADE,
-
     animals_count INTEGER NOT NULL CHECK (animals_count >= 0),
-
     CONSTRAINT unique_species_enclosure UNIQUE (species_id, enclosure_id)
 );
 
