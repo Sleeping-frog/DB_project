@@ -1,0 +1,14 @@
+Select ... Where
+http://127.0.0.1:8000/species/filter?family=Felidae&habitat=Savanna
+
+Join
+http://127.0.0.1:8000/placements/join
+
+Group by
+http://127.0.0.1:8000/species/group_by_total
+
+Sorting by lifespan_years
+http://127.0.0.1:8000/species/sorted?order=desc
+
+Update count of animals if there is pond (through docs panel)
+http://127.0.0.1:8000/docs#/default/increase_animals_if_pond_placements_increase_if_pond_put
