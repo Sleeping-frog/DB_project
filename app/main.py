@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
+from sqlalchemy import text
 
 from app.database import Base, engine, SessionLocal
 from app.models import Species, Enclosure, Placement
@@ -62,6 +63,26 @@ def species_sorted(order: str = "asc", db: Session = Depends(get_db)):
     else:
         query = query.order_by(Species.lifespan_years.asc())
     return query.all()
+
+@app.get("/species/search_regex")
+def search_regex(pattern: str = Query(...), db: Session = Depends(get_db)):
+    query = text("""
+        SELECT *
+        FROM species
+        WHERE extra::text ~ :regex
+    """)
+    result = db.execute(query, {"regex": pattern}).fetchall()
+    return [dict(row._mapping) for row in result]
+
+@app.get("/species/paginated", response_model=list[SpeciesOut])
+def list_species_paginated(
+    page: int = Query(1, ge=1, description="Page number"),
+    size: int = Query(10, ge=1, le=100, description="Number of items per page"),
+    db: Session = Depends(get_db)
+):
+    offset = (page - 1) * size
+    species_list = db.query(Species).offset(offset).limit(size).all()
+    return species_list
 
 @app.get("/species/{species_id}", response_model=SpeciesOut)
 def get_species(species_id: int, db: Session = Depends(get_db)):

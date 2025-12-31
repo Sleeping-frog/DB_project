@@ -12,3 +12,9 @@ http://127.0.0.1:8000/species/sorted?order=desc
 
 Update count of animals if there is pond (through docs panel)
 http://127.0.0.1:8000/docs#/default/increase_animals_if_pond_placements_increase_if_pond_put
+
+Test search by regex
+http://127.0.0.1:8000/species/search_regex?pattern=Rare
+
+Test pagination
+http://127.0.0.1:8000/species/paginated?page=2&size=5

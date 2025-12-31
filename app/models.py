@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, Text, Boolean, Numeric, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 from app.database import Base
+from sqlalchemy.dialects.postgresql import JSONB
 
 class Species(Base):
     __tablename__ = "species"
@@ -10,6 +11,7 @@ class Species(Base):
     family = Column(Text, nullable=False)
     habitat = Column(Text, nullable=False)
     lifespan_years = Column(Integer, nullable=False)
+    extra = Column(JSONB)
 
     placements = relationship("Placement", back_populates="species", cascade="all, delete")
 
